@@ -36,20 +36,45 @@ for index, row in data.iterrows():
     cbe_email_1 = row.iloc[7]  # Column H (index 7)
     cbe_email_2 = row.iloc[9]  # Column J (index 9)
 
-    # Create the text for the image
-    text = f"SWC Winter Formal 2024\nThis ticket is valid for\n{first_name} {last_name}\n{guest_name_1}\n{guest_name_2}"
+    guest_name_1 = guest_name_1 if pd.notnull(guest_name_1) else ""
+    guest_name_2 = guest_name_2 if pd.notnull(guest_name_2) else ""
 
-    # Generate the image
-    img = Image.new("RGB", (800, 500), color="black")  # Adjust dimensions as needed
-    draw = ImageDraw.Draw(img)
+    # Load your pre-designed image
+    template_image_path = r"C:\Users\tatho\Downloads\demo ticket template.png"  # Replace with your template's path
+    template_img = Image.open(template_image_path)
+
+    # Ensure the template has an RGBA mode (if you want transparency)
+    template_img = template_img.convert("RGBA")
+
+    # Create a drawable canvas on top of the image
+    draw = ImageDraw.Draw(template_img)
+
+    # Define text properties
+    FONT_SIZE = 50  # Adjust this to make the font bigger
+    LINE_SPACING = 10  # Adjust this for more space between lines
+    text = f"{first_name} {last_name}\n{guest_name_1}\n{guest_name_2}"
     font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
-    text_width, text_height = draw.textbbox((0, 0), text, font=font)[2:]
-    position = ((800 - text_width) // 2, (500 - text_height) // 2)
-    draw.multiline_text(position, text, fill="white", font=font, align="center")
 
-    # Save the image
-    image_path = f"generated_images/ticket_{index}.png"
-    img.save(image_path)
+    # Calculate the total height of the text block, including line spacing
+    lines = text.split('\n')
+    text_width = max(draw.textbbox((0, 0), line, font=font)[2] for line in lines)
+    text_height = sum(draw.textbbox((0, 0), line, font=font)[3] for line in lines) + (LINE_SPACING * (len(lines) - 1))
+
+    # Calculate the position to center the text block
+    position_x = (template_img.width - text_width) // 2
+    position_y = (template_img.height - text_height) // 2
+
+    # Overlay each line of text with spacing
+    current_y = position_y
+    for line in lines:
+        line_width, line_height = draw.textbbox((0, 0), line, font=font)[2:4]
+        line_x = (template_img.width - line_width) // 2  # Center each line
+        draw.text((line_x, current_y), line, fill="white", font=font, align="center")
+        current_y += line_height + LINE_SPACING  # Move to the next line position
+
+    # Save the modified image
+    image_path = f"generated_images/ticket_{your_email}.png"
+    template_img.save(image_path)
 
     # Send email with the image
     # Generate the list of recipients, ensuring each email is a string and valid
@@ -74,7 +99,7 @@ for index, row in data.iterrows():
     msg["From"] = EMAIL_USER
     msg["To"] = ", ".join(recipients)
     msg["Subject"] = "Your Ticket (Demo)"
-    body = "Please find your ticket attached. not the real thing bro"
+    body = "nvm guys i might have figured out how to make ticket pretty #womeninSTEM"
     msg.attach(MIMEText(body, "plain"))
 
     # Attach the image
