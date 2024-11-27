@@ -20,7 +20,7 @@ SMTP_SERVER = "smtp.gmail.com"  # Adjust to your SMTP server
 SMTP_PORT = 587
 EMAIL_USER = "swcpromcommittee@gmail.com"  # Replace with your email
 EMAIL_PASS = "ijbr jqsa vtak xhkq"  # Replace with your email password
-DEFAULT_FROM_EMAIL='swcpromcommittee@gmail.com'
+DEFAULT_FROM_EMAIL = 'swcpromcommittee@gmail.com'
 
 # Ensure output directory exists
 os.makedirs("generated_images", exist_ok=True)
@@ -35,9 +35,18 @@ for index, row in data.iterrows():
     your_email = row.iloc[4]  # Column E (index 4)
     cbe_email_1 = row.iloc[7]  # Column H (index 7)
     cbe_email_2 = row.iloc[9]  # Column J (index 9)
+    guest_name_3 = row.iloc[10]  # Column K
+    cbe_email_3 = row.iloc[11]   # Column L
+    guest_name_4 = row.iloc[12]  # Column M
+    cbe_email_4 = row.iloc[13]  # Column N
+    guest_name_5 = row.iloc[14]  # Column O
+    cbe_email_5 = row.iloc[15]  # Column P
 
     guest_name_1 = guest_name_1 if pd.notnull(guest_name_1) else ""
     guest_name_2 = guest_name_2 if pd.notnull(guest_name_2) else ""
+    guest_name_3 = guest_name_3 if pd.notnull(guest_name_3) else ""
+    guest_name_4 = guest_name_4 if pd.notnull(guest_name_4) else ""
+    guest_name_5 = guest_name_5 if pd.notnull(guest_name_5) else ""
 
     # Load your pre-designed image
     template_image_path = r"C:\Users\tatho\Downloads\demo ticket template.png"  # Replace with your template's path
@@ -50,9 +59,9 @@ for index, row in data.iterrows():
     draw = ImageDraw.Draw(template_img)
 
     # Define text properties
-    FONT_SIZE = 50  # Adjust this to make the font bigger
-    LINE_SPACING = 10  # Adjust this for more space between lines
-    text = f"{first_name} {last_name}\n{guest_name_1}\n{guest_name_2}"
+    FONT_SIZE = 60  # Adjust this to make the font bigger
+    LINE_SPACING = 20  # Adjust this for more space between lines
+    text = f"{first_name} {last_name}\n{guest_name_1}\n{guest_name_2}\n{guest_name_3}\n{guest_name_4}\n{guest_name_5}"
     font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
 
     # Calculate the total height of the text block, including line spacing
@@ -81,7 +90,10 @@ for index, row in data.iterrows():
     recipients = [
         str(your_email) if pd.notnull(your_email) and your_email != "" else None,
         str(cbe_email_1) if pd.notnull(cbe_email_1) and cbe_email_1 != "" else None,
-        str(cbe_email_2) if pd.notnull(cbe_email_2) and cbe_email_2 != "" else None
+        str(cbe_email_2) if pd.notnull(cbe_email_2) and cbe_email_2 != "" else None,
+        str(cbe_email_3) if pd.notnull(cbe_email_3) and cbe_email_3 != "" else None,
+        str(cbe_email_4) if pd.notnull(cbe_email_4) and cbe_email_2 != "" else None,
+        str(cbe_email_5) if pd.notnull(cbe_email_5) and cbe_email_3 != "" else None
     ]
 
     # Remove any None values (invalid email addresses)
@@ -98,8 +110,8 @@ for index, row in data.iterrows():
     msg = MIMEMultipart()
     msg["From"] = EMAIL_USER
     msg["To"] = ", ".join(recipients)
-    msg["Subject"] = "Your Ticket (Demo)"
-    body = "nvm guys i might have figured out how to make ticket pretty #womeninSTEM"
+    msg["Subject"] = "Reply w/ thumbs up on insta - Your Ticket (Demo)"
+    body = "Good Morning! If you get this, reply with thumbs up on insta please #womeninSTEM"
     msg.attach(MIMEText(body, "plain"))
 
     # Attach the image
