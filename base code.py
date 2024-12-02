@@ -12,7 +12,7 @@ file_path = r"C:\Users\tatho\Documents\Tickets Demo System.xlsx"
 data = pd.read_excel(file_path)
 
 # Font setup (adjust path to match your system)
-FONT_PATH = r"C:\Windows\Fonts\Arial.ttf"
+FONT_PATH = r"C:\Windows\Fonts\GARABD.TTF"
 FONT_SIZE = 30
 
 # Email setup
@@ -49,7 +49,7 @@ for index, row in data.iterrows():
     guest_name_5 = guest_name_5 if pd.notnull(guest_name_5) else ""
 
     # Load your pre-designed image
-    template_image_path = r"C:\Users\tatho\Downloads\demo ticket template.png"  # Replace with your template's path
+    template_image_path = r"C:\Users\tatho\Downloads\formal ticket template.png"  # Replace with your template's path
     template_img = Image.open(template_image_path)
 
     # Ensure the template has an RGBA mode (if you want transparency)
@@ -59,8 +59,8 @@ for index, row in data.iterrows():
     draw = ImageDraw.Draw(template_img)
 
     # Define text properties
-    FONT_SIZE = 60  # Adjust this to make the font bigger
-    LINE_SPACING = 20  # Adjust this for more space between lines
+    FONT_SIZE = 70  # Adjust this to make the font bigger
+    LINE_SPACING = 30  # Adjust this for more space between lines
     text = f"{first_name} {last_name}\n{guest_name_1}\n{guest_name_2}\n{guest_name_3}\n{guest_name_4}\n{guest_name_5}"
     font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
 
@@ -107,12 +107,59 @@ for index, row in data.iterrows():
         print(f"Skipping row {index} due to missing or invalid email addresses.")
         continue
 
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    # Email setup
     msg = MIMEMultipart()
     msg["From"] = EMAIL_USER
     msg["To"] = ", ".join(recipients)
-    msg["Subject"] = "Reply w/ thumbs up on insta - Your Ticket (Demo)"
-    body = "Good Morning! If you get this, reply with thumbs up on insta please #womeninSTEM"
-    msg.attach(MIMEText(body, "plain"))
+    msg["Subject"] = "🎟 Your Ticket + Event Details"
+
+    # HTML Body
+    body = """
+    <html>
+    <body>
+        <p>Hi {first_name},</p>
+        <p>Your ticket is <b>attached</b> to this email. Please <b>save it on your phone</b> and <b>share it with your guests.</b> All attendees must show their <b>ticket</b> and <b>School ID</b> at the entrance.</p>
+
+        <h3><u>Event Details<u></h3>
+        <ul>
+            <li><b>Date:</b> Wednesday, December 4th</li>
+            <li><b>Time:</b> 6:00 PM - 8:00 PM (<i>Doors close at 6:30 PM</i>)</li>
+            <li><b>Location:</b> SWC Gym</li>
+            <li><b>Included:</b> Snacks + Free Photo Booth Prints</li>
+        </ul>
+
+        <h3><u>Event Guidelines<u></h3>
+        <ul>
+            <li><b>Bring:</b> School ID + Phone</li>
+            <li><b>Guests:</b> Must have the ticket and be an SWC student</li>
+            <li><b>Entrance Requirements:</b></li>
+            <ul>
+                <li>SWC students only</li>
+                <li>Bag & coat checks at the entrance by Administration</li>
+                <li><b>No re-entry after 6:30 PM</b></li>
+            </ul>
+            <li><b>Prohibited:</b></li>
+            <ul>
+                <li><b>NO outside food or drink</b></li>
+                <li><b>NO alcohol or illicit substances</b></li>
+            </ul>
+        </ul>
+
+        <p><b>Reminder:</b> All attendees must be SWC students.</p>
+        
+        <p><i>In case of emergency, contact +1(403)-383-9086 or a teacher supervisor.<i></p>
+
+        <p>Thank you, and we can’t wait to see you there!</p>
+        <p><b>Winter Formal Organizing Committee</b></p>
+    </body>
+    </html>
+    """.format(first_name=first_name)
+
+    # Attach the HTML body
+    msg.attach(MIMEText(body, "html"))
 
     # Attach the image
     with open(image_path, "rb") as attachment:
